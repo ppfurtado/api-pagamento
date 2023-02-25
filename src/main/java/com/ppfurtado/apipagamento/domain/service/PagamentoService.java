@@ -7,6 +7,9 @@ import com.ppfurtado.apipagamento.domain.model.Pagamento;
 import com.ppfurtado.apipagamento.domain.repository.PagamentoRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Service
 public class PagamentoService {
 
 
@@ -21,6 +24,10 @@ public class PagamentoService {
     public PagamentoResponse save(PagamentoRequest request){
         Pagamento pagamento = mapper.requestToPagamento(request);
         return mapper.pagamentoToResponse(repository.save(pagamento));
+    }
+
+    public List<Pagamento> findAll(){
+        return repository.findAll();
     }
 
 
