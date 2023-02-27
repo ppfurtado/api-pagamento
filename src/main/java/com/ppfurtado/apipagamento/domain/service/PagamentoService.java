@@ -29,6 +29,19 @@ public class PagamentoService {
 
     public PagamentoResponse save(PagamentoRequest request){
         Pagamento pagamento = mapper.requestToPagamento(request);
+        String metodoPagamento = request.metodoPagamento();
+        boolean usandoCartao =(metodoPagamento.equals(MetodoPagamentoEnum.CARTAO_CREDITO.getValue())) ||
+                (metodoPagamento.equals(MetodoPagamentoEnum.CARTAO_DEBITO.getValue()));
+
+        if (!usandoCartao){
+            pagamento.setNumeroCartao(null);
+        } else {
+            if (request.numeroCartao() == null || request.numeroCartao().isEmpty()){
+                throw new NegocioException("Para os métodos de pagamento cartão credito e cartão debito, é necessário " +
+                        "informar um número de cartão");
+            }
+        }
+
         return mapper.pagamentoToResponse(repository.save(pagamento));
     }
 
