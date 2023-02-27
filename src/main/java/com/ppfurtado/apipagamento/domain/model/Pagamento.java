@@ -1,33 +1,41 @@
 package com.ppfurtado.apipagamento.domain.model;
 
 
+import com.ppfurtado.apipagamento.domain.enums.MetodoPagamentoEnum;
+import com.ppfurtado.apipagamento.domain.enums.StatusEnum;
 import jakarta.persistence.*;
 
 import java.util.Objects;
 
-@Entity
+@Entity(name = "PAGAMENTO")
 public class Pagamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int codigoPagamento;
-
     private String cpfCnpj;
+
+    @Enumerated(EnumType.STRING)
+    private MetodoPagamentoEnum metodoPagamento;
 
     private String numeroCartao;
 
     private double valorPagamento;
 
+    @Enumerated(EnumType.STRING)
+    private StatusEnum status;
+
     public Pagamento() {
     }
 
-    public Pagamento(int codigoPagamento, String cpfCnpj, String numeroCartao, double valorPagamento) {
-        this.codigoPagamento = codigoPagamento;
+    public Pagamento(Long id, String cpfCnpj, MetodoPagamentoEnum metodoPagamento, String numeroCartao, double valorPagamento, StatusEnum status) {
+        this.id = id;
         this.cpfCnpj = cpfCnpj;
+        this.metodoPagamento = metodoPagamento;
         this.numeroCartao = numeroCartao;
         this.valorPagamento = valorPagamento;
+        this.status = status;
     }
 
     public Long getId() {
@@ -38,20 +46,20 @@ public class Pagamento {
         this.id = id;
     }
 
-    public int getCodigoPagamento() {
-        return codigoPagamento;
-    }
-
-    public void setCodigoPagamento(int codigoPagamento) {
-        this.codigoPagamento = codigoPagamento;
-    }
-
     public String getCpfCnpj() {
         return cpfCnpj;
     }
 
     public void setCpfCnpj(String cpfCnpj) {
         this.cpfCnpj = cpfCnpj;
+    }
+
+    public MetodoPagamentoEnum getMetodoPagamento() {
+        return metodoPagamento;
+    }
+
+    public void setMetodoPagamento(MetodoPagamentoEnum metodoPagamentoEnum) {
+        this.metodoPagamento = metodoPagamentoEnum;
     }
 
     public String getNumeroCartao() {
@@ -70,17 +78,29 @@ public class Pagamento {
         this.valorPagamento = valorPagamento;
     }
 
+    public StatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusEnum status) {
+        this.status = status;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Pagamento pagamento = (Pagamento) o;
-        return codigoPagamento == pagamento.codigoPagamento && Objects.equals(id, pagamento.id) && Objects.equals(cpfCnpj, pagamento.cpfCnpj);
+        return Objects.equals(id, pagamento.id) && Objects.equals(cpfCnpj, pagamento.cpfCnpj);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, codigoPagamento, cpfCnpj);
+        return Objects.hash(id, cpfCnpj);
+    }
+
+    @PrePersist
+    public void preStatus() {
+        this.setStatus(StatusEnum.PENDENTE);
     }
 }
