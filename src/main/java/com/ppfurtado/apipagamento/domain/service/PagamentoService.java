@@ -1,13 +1,19 @@
 package com.ppfurtado.apipagamento.domain.service;
 
+import com.ppfurtado.apipagamento.domain.dto.AtualizacaoRequest;
 import com.ppfurtado.apipagamento.domain.dto.PagamentoRequest;
 import com.ppfurtado.apipagamento.domain.dto.PagamentoResponse;
-import com.ppfurtado.apipagamento.domain.mapper.PagamentoMapper;
+import com.ppfurtado.apipagamento.domain.dto.mapper.PagamentoMapper;
+import com.ppfurtado.apipagamento.domain.enums.MetodoPagamentoEnum;
+import com.ppfurtado.apipagamento.domain.enums.StatusEnum;
 import com.ppfurtado.apipagamento.domain.model.Pagamento;
 import com.ppfurtado.apipagamento.domain.repository.PagamentoRepository;
+import com.ppfurtado.apipagamento.exception.NegocioException;
+import com.ppfurtado.apipagamento.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PagamentoService {
@@ -26,8 +32,13 @@ public class PagamentoService {
         return mapper.pagamentoToResponse(repository.save(pagamento));
     }
 
-    public List<Pagamento> findAll(){
-        return repository.findAll();
+    public List<PagamentoResponse> findAll(Long id, String cpfCnpj, StatusEnum statusEnum){
+        List<Pagamento> pagamentos = repository.filtroPagamento(id, cpfCnpj, Objects.toString(statusEnum, null));
+        return pagamentos.stream().map(mapper::pagamentoToResponse).toList();
+    }
+
+    public Pagamento findById(Long id){
+        return repository.findById(id).orElseThrow(() -> new NotFoundException("Pagamento Não encotrado"));
     }
 
 
