@@ -31,4 +31,31 @@ public class PagamentoService {
     }
 
 
+    public PagamentoResponse update(Long id, AtualizacaoRequest request) {
+
+        Pagamento pagamento = findById(id);
+        String statusPagamento = pagamento.getStatus().getValue();
+        String statusRequest = request.status().getValue();
+
+        if (StatusEnum.SUCESSO.getValue().equals(statusPagamento)){
+            throw new NegocioException("O Pagamento está Processado com SUCESSO, por isso não pode ter seu status alterado");
+        } else if(StatusEnum.FALHA.getValue().equals(statusPagamento) && !(StatusEnum.PENDENTE.getValue().equals(statusRequest))) {
+            throw new NegocioException("O Pagamento está Processado com Falha, por isso ele só pode ter seu status alterado para PENDENTE");
+        }
+
+        pagamento.setStatus(request.status());
+
+        return mapper.pagamentoToResponse(repository.save(pagamento));
+
+    }
+
+    public PagamentoResponse delete(Long id) {
+        Pagamento pagamento = findById(id);
+        if (!StatusEnum.PENDENTE.getValue().equals(pagamento.getStatus().getValue())){
+            throw new NegocioException("Apenas os pagamentos em status Pendente podem ser deletados");
+        }
+        repository.delete(pagamento);
+
+        return mapper.pagamentoToResponse(pagamento);
+    }
 }
