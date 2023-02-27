@@ -42,7 +42,7 @@ public class PagamentoController implements PagamentoControllerWeb {
                                            @RequestParam(required = false) String cpfCnpj,
                                            @RequestParam(required = false) StatusEnum statusEnum){
         List<PagamentoResponse> pagamentoResponses = service.findAll(id, cpfCnpj, statusEnum);
-        Properties properties = new Properties(0, HttpStatus.OK, "Pagamento atualizado com Sucesso");
+        Properties properties = new Properties(0, HttpStatus.OK, "Busca atualizada com Sucesso");
         return ResponseEntity.ok(new ResponseRest<>(pagamentoResponses, properties, null));
     }
 
